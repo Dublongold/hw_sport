@@ -36,7 +36,8 @@ dependencies:
   flutter_html: any
   shared_preferences: any
   provider: any
-  webview_flutter: ^4.4.2
+  webview_flutter: any
+  onesignal_flutter: any
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -64,43 +65,30 @@ flutter:
   uses-material-design: true
 
   assets:
-    - res/images/app_background.png
     - res/images/continue_button.png
-    - res/images/correct_option_background.png
     - res/images/cup.png
     - res/images/done_mark.png
     - res/images/home_button(selected).png
     - res/images/home_button.png
-    - res/images/incorrect_option_background.png
     - res/images/icon_bg.png
     - res/images/icon_logo.png
     - res/images/loading_background.png
-    - res/images/loading_bar_background.png
-    - res/images/loading_bar_indicator.png
     - res/images/new_quiz_button.png
     - res/images/option_a.png
     - res/images/option_b.png
     - res/images/option_c.png
     - res/images/option_d.png
-    - res/images/option_a_with_field.png
-    - res/images/option_b_with_field.png
-    - res/images/option_c_with_field.png
-    - res/images/option_d_with_field.png
     - res/images/privacy_policy_button.png
     - res/images/progress_button(selected).png
     - res/images/progress_button.png
     - res/images/selected_answer.png
-    - res/images/selected_option_background.png
     - res/images/share_button(selected).png
     - res/images/share_button.png
     - res/images/start_button.png
     - res/images/statistic_button.png
     - res/images/submit_button.png
     - res/images/time_icon.png
-    - res/images/top_progress_bar_backgrounds.png
-    - res/images/top_progress_bar_indicators.png
     - res/images/try_again_mark.png
-    - res/images/user_answers_option_background.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

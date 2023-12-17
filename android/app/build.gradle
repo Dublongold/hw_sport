@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.hollyquiz.dfree.sports.hw_sport"
+    namespace "com.hollyquiz.dfree.sports"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 

@@ -1,4 +1,4 @@
-package com.hollyquiz.dfree.sports.hw_sport
+package com.hollyquiz.dfree.sports
 
 import io.flutter.embedding.android.FlutterActivity
 

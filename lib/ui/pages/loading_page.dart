@@ -51,6 +51,7 @@ class _LoadingPageState extends State<LoadingPage> {
             dataLoaded = false;
             toNetwork = true;
           }
+          urlToConnect = location!;
           shared.setString(sharedSavedUrl, location!);
         });
       }

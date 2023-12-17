@@ -24,3 +24,6 @@ const String clearDataString = "Clear data";
 const String correctAnswerString = "Correct answer: %s";
 const String incorrectAnswerString = "Wrong answer: %s";
 const String timeExpiredString = "Time Expired";
+
+
+const String oneSignalIdString = "3da6baa0-0807-4d96-90f0-b5832830e49c";
