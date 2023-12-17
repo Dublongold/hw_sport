@@ -1,0 +1,12 @@
+GP
+com.hollyquiz.dfree.sports
+Название - HW Sport
+3da6baa0-0807-4d96-90f0-b5832830e49c - signal
+
+2я версия
+Политику тоже добавим в обнове
+https://apisfit.top/fittpro
+https://apisfit.top/fittpro?rod=policy
+Политику так что бы можно было изменить но не в браузере открывать) 
+
+
