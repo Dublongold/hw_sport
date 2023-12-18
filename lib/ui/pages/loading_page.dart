@@ -17,7 +17,7 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1)).then((value) => dataLoaded = true);
+    Future.delayed(const Duration(seconds: 1)).then((value) => setState((){dataLoaded = true;}));
   }
 
   @override
