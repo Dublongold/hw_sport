@@ -3,7 +3,6 @@ import 'package:hw_sport/constants/strings.dart';
 import 'package:hw_sport/states/question_state.dart';
 import 'package:hw_sport/ui/pages/loading_page.dart';
 import 'package:provider/provider.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 
 import 'constants/theme_data.dart';
@@ -15,9 +14,6 @@ void main() {
           child: const MyApp()
       )
   );
-  OneSignal.initialize(oneSignalIdString);
-
-  OneSignal.Notifications.requestPermission(true);
 }
 
 class MyApp extends StatelessWidget {
