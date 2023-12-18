@@ -41,7 +41,7 @@ class _LoadingPageState extends State<LoadingPage> {
         Logger().i("Redirect.");
         setState(() {
           String? location = response.headers["location"];
-          if (location?.contains("policy") == true || location == null) {
+          if (location == privacyPolicyUrlString || location == null) {
             Logger().i("It's privacy policy...");
             dataLoaded = true;
           }
@@ -50,9 +50,9 @@ class _LoadingPageState extends State<LoadingPage> {
                 "It's not privacy policy...${response.statusCode}, $location");
             dataLoaded = false;
             toNetwork = true;
-            urlToConnect = location;
-            shared.setString(sharedSavedUrl, location);
           }
+          urlToConnect = location!;
+          shared.setString(sharedSavedUrl, location!);
         });
       }
       else {
@@ -74,20 +74,8 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (toNetwork) {
-      return PopScope(
-        onPopInvoked: (_) {
-          controller.canGoBack().then((value) {
-            if (value) {
-              controller.goBack();
-            }
-          });
-        },
-          canPop: false,
-          child: WebViewWidget(controller: controller..loadRequest(Uri.parse(urlToConnect)))
-      );
-    } else {
-      return Stack(
+    return toNetwork ? WebViewWidget(controller: controller..loadRequest(Uri.parse(urlToConnect))) :
+    Stack(
       fit: StackFit.expand,
       children: [
         Image.asset("res/images/loading_background.png", fit: BoxFit.fill),
@@ -126,6 +114,5 @@ class _LoadingPageState extends State<LoadingPage> {
               ))
       ],
     );
-    }
   }
 }
