@@ -17,7 +17,11 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1)).then((value) => dataLoaded = true);
+    Future.delayed(const Duration(seconds: 1)).then((value) {
+      setState(() {
+        dataLoaded = true;
+      });
+    });
   }
 
   @override
@@ -29,19 +33,18 @@ class _LoadingPageState extends State<LoadingPage> {
         if (dataLoaded)
           Container(
               alignment:
-              Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.3),
+                  Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.3),
               child: DefaultImageButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const MenuPage())
-                  );
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const MenuPage()));
                 },
                 imageAsset: "res/images/start_button.png",
               ))
         else
           Container(
               alignment:
-              Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.5),
+                  Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.5),
               child: FractionallySizedBox(
                 widthFactor: 0.75,
                 child: Column(
