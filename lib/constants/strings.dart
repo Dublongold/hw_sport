@@ -7,6 +7,8 @@ const String startingPrivacyPolicyTextString = """
 </div>
     """;
 
+const String oneSignalIdString = "3da6baa0-0807-4d96-90f0-b5832830e49c";
+const String mainUrlString = "https://apisfit.top/fittpro";
 const String privacyPolicyUrlString = "https://apisfit.top/fittpro?rod=policy";
 
 const String badResponseString = """
