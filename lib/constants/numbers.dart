@@ -1,2 +1,2 @@
-const double bottomButtonHeight = 100;
-const double bottomButtonWidth = 114;
+const double bottomButtonHeight = 64;
+const double bottomButtonWidth = 75;

@@ -1,73 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:hw_sport/constants/numbers.dart';
-import 'package:hw_sport/models/page_entity.dart';
-import 'package:hw_sport/states/question_state.dart';
-import 'package:hw_sport/ui/pages/progress_page.dart';
+import 'package:hw_sport/states/quiz_state.dart';
+import 'package:hw_sport/ui/components/button_with_two_images.dart';
+import 'package:hw_sport/ui/pages/setting_page.dart';
+import 'package:hw_sport/ui/pages/statistic_page.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/colors.dart';
+
 class WithBottomButtons extends StatelessWidget {
-  final Widget content;
-  final int inactiveButton;
-  final PageEntity pageEntity;
+  final Widget child;
+  final int disabledButton;
 
   const WithBottomButtons({
     super.key,
-    required this.content,
-    required this.pageEntity,
-    this.inactiveButton = -1
+    required this.child,
+    this.disabledButton = -1
   });
 
 
   @override
   Widget build(BuildContext context) {
+    const backgroundRadius = Radius.circular(32);
     return Stack(
       children: [
-        content,
+        child,
         Align(
           alignment: Alignment.bottomCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 375
+          child: Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(topLeft: backgroundRadius, topRight: backgroundRadius),
+              color: bottomBarBackgroundColor
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _BottomButton(
-                    inactive: inactiveButton == 0,
-                    imageAssetUnpressed: "res/images/home_button.png",
-                    imageAssetPressed: "res/images/home_button(selected).png",
-                    action: () {
-                      if (pageEntity is PageEntityProgress) {
-                        if((pageEntity as PageEntityProgress).answersCount == 20) {
-                          QuestionState state = Provider.of(context, listen: false);
-                          state.reset();
-                          Navigator.of(context).popUntil((route) => route.isFirst);
-                          return;
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 25),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 375
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _BottomButton(
+                        isEnabled: disabledButton != 0,
+                        imageAssetUnpressed: "res/images/button_menu.png",
+                        imageAssetPressed: "res/images/button_menu(pressed).png",
+                        disabledImageAsset: "res/images/button_menu(pressed).png",
+                        action: () {
+                            Navigator.of(context).pop();
                         }
-                      }
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                }),
-                _BottomButton(
-                    inactive: inactiveButton == 1,
-                    imageAssetUnpressed: "res/images/progress_button.png",
-                    imageAssetPressed: "res/images/progress_button(selected).png",
-                    action: () {
-                      var answers = Provider.of<QuestionState>(context, listen: false).answers;
-                      if (pageEntity is PageEntityQuiz) {
-                        if ((pageEntity as PageEntityQuiz).questionNumber-1 < answers.length) {
-                          answers = [];
-                        }
-                      }
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => ProgressPage(currentAnswers: answers))
-                      );
-                }),
-                _BottomButton(
-                    inactive: inactiveButton == 2,
-                    imageAssetUnpressed: "res/images/share_button.png",
-                    imageAssetPressed: "res/images/share_button(selected).png",
-                    action: () { }),
-              ]
+                    ),
+                    _BottomButton(
+                        isEnabled: disabledButton != 1,
+                        imageAssetUnpressed: "res/images/button_statistic.png",
+                        imageAssetPressed: "res/images/button_statistic(pressed).png",
+                        disabledImageAsset: "res/images/button_statistic(pressed).png",
+                        action: () {
+                          var quizType = Provider.of<QuizState>(context, listen: false).quizType;
+                          var route = MaterialPageRoute(builder: (_) => StatisticPage(quizType: quizType));
+                          if (disabledButton == 2) {
+                            Navigator.of(context).pushReplacement(route);
+                          }
+                          else {
+                            Navigator.of(context).push(route);
+                          }
+                    }),
+                    _BottomButton(
+                        isEnabled: disabledButton != 2,
+                        imageAssetUnpressed: "res/images/button_setting.png",
+                        imageAssetPressed: "res/images/button_setting(pressed).png",
+                        disabledImageAsset: "res/images/button_setting(pressed).png",
+                        action: () {
+                          var route = MaterialPageRoute(builder: (_) => const SettingPage());
+                          if (disabledButton == 1) {
+                            Navigator.of(context).pushReplacement(route);
+                          }
+                          else {
+                            Navigator.of(context).push(route);
+                          }
+                        }),
+                  ]
+                ),
+              ),
             ),
           ),
         ),
@@ -80,11 +95,14 @@ class _BottomButton extends StatefulWidget {
   final void Function() action;
   final String imageAssetPressed;
   final String imageAssetUnpressed;
-  final bool inactive;
+  final String disabledImageAsset;
+  final bool isEnabled;
+
   const _BottomButton({
-    required this.inactive,
+    required this.isEnabled,
     required this.imageAssetPressed,
     required this.imageAssetUnpressed,
+    required this.disabledImageAsset,
     required this.action,
   });
 
@@ -103,34 +121,14 @@ class _BottomButtonState extends State<_BottomButton> {
             maxHeight: bottomButtonHeight
         ),
         child: AspectRatio(
-          aspectRatio: 678 / 582,
-          child: MouseRegion(
-            cursor: widget.inactive ? MouseCursor.defer : SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: !widget.inactive ? widget.action : null,
-              onTapDown: (_) {
-                setState(() {
-                  isPressed = true;
-                });
-              },
-                onPanStart: (_) {
-                  setState(() {
-                    isPressed = true;
-                  });
-                },
-                onPanEnd: (_) {
-                  setState(() {
-                    isPressed = false;
-                  });
-                },
-                onTapUp: (_) {
-                setState(() {
-                  isPressed = false;
-                });
-                },
-                child: Image.asset(isPressed || widget.inactive ? widget.imageAssetPressed : widget.imageAssetUnpressed)
-            ),
-          ),
+          aspectRatio: 158 / 135,
+          child: ButtonWithTwoImages(
+              isEnabled: widget.isEnabled,
+              imageAssetPressed: widget.imageAssetPressed,
+              imageAssetUnpressed: widget.imageAssetUnpressed,
+              disabledImageAsset: widget.disabledImageAsset,
+              action: widget.action
+          )
         ),
       ),
     );

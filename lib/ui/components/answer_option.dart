@@ -19,7 +19,7 @@ class AnswerOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 30),
       child: MouseRegion(
         cursor: onSelected != null ? SystemMouseCursors.click : MouseCursor.defer,
         child: GestureDetector(

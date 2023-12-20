@@ -1,3 +1,3 @@
 const String sharedStatisticData = "statistic_data";
 
-const String sharedSavedUrl = "url";
+const String sharedSound = "url";

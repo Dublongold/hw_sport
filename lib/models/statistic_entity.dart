@@ -1,13 +1,23 @@
+import 'package:hw_sport/models/quiz_types.dart';
+
 class StatisticEntity {
-  final String text;
-  final int numberOfCorrectAnswers;
-  final int numberOfIncorrectAnswers;
-  final double averageTimeToAnswer;
+  final QuizType quizType;
+  final int questionNumber;
+  final int answer;
+  final AnswerState answerState;
+  final void Function(bool) onPopInvoked;
 
   StatisticEntity({
-    required this.text,
-    required this.numberOfCorrectAnswers,
-    required this.numberOfIncorrectAnswers,
-    required this.averageTimeToAnswer,
+    required this.quizType,
+    required this.questionNumber,
+    required this.answer,
+    required this.answerState,
+    required this.onPopInvoked
   });
+}
+
+enum AnswerState {
+  done,
+  failed,
+  timeExpired
 }

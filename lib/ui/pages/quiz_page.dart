@@ -1,109 +1,92 @@
 import 'package:flutter/material.dart';
 import 'package:hw_sport/constants/arrays.dart';
 import 'package:hw_sport/constants/colors.dart';
-import 'package:hw_sport/constants/shared_preferences.dart';
-import 'package:hw_sport/models/page_entity.dart';
+import 'package:hw_sport/models/quiz_types.dart';
 import 'package:hw_sport/ui/components/answer_option.dart';
-import 'package:hw_sport/ui/components/default_image_button.dart';
+import 'package:hw_sport/ui/components/button_with_two_images.dart';
 import 'package:hw_sport/ui/components/with_bottom_buttons.dart';
-import 'package:hw_sport/ui/pages/progress_page.dart';
-import 'package:hw_sport/util/convert_saved_statistic_data.dart';
+import 'package:hw_sport/ui/pages/statistic_page.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../states/question_state.dart';
+import '../../constants/cricket_quiz.dart' as cricket;
+import '../../constants/basketball_quiz.dart' as basketball;
+import '../../constants/soccer_quiz.dart' as soccer;
+
+import '../../states/quiz_state.dart';
 
 class QuizPage extends StatefulWidget {
+  /// Question number. <b>Must start <u>from</u> 0!</b>
   final int questionNumber;
-  final bool getTimeFromState;
+  final QuizType quizType;
   final bool isRetry;
 
-  const QuizPage({
-    super.key,
-    required this.questionNumber,
-    this.getTimeFromState = true,
-    this.isRetry = false
-  });
+  const QuizPage(
+      {super.key,
+      this.questionNumber = 0,
+      required this.quizType,
+      this.isRetry = false});
 
   @override
   State<StatefulWidget> createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage> {
-  double time = 60;
+  double time = 300;
   int questionNumber = 1;
   int selectedAnswer = -1;
   bool sent = false;
 
+  List<int> get _correctAnswers => switch (widget.quizType) {
+        QuizType.cricket => cricket.correctAnswers,
+        QuizType.basketball => basketball.correctAnswers,
+        QuizType.soccer => soccer.correctAnswers,
+        QuizType.none => List.empty(),
+      };
+
+  List<String> get _questions => switch (widget.quizType) {
+        QuizType.cricket => cricket.questions,
+        QuizType.basketball => basketball.questions,
+        QuizType.soccer => soccer.questions,
+        QuizType.none => List.empty(),
+      };
+
+  List<List<String>> get _answers => switch (widget.quizType) {
+        QuizType.cricket => cricket.answers,
+        QuizType.basketball => basketball.answers,
+        QuizType.soccer => soccer.answers,
+        QuizType.none => List.empty(),
+      };
+
   @override
   void initState() {
     super.initState();
-    if (widget.getTimeFromState) {
-      QuestionState currentQuestionState = Provider.of<QuestionState>(
-          context, listen: false);
-      time = currentQuestionState.time;
-    }
     questionNumber = widget.questionNumber;
     startTimer();
   }
 
-  Future<void> saveData() async {
-    SharedPreferences shared = await SharedPreferences.getInstance();
-    List<String>? savedStatisticData = shared.getStringList(sharedStatisticData);
-    var converted = convertFromSavedStatisticData(savedStatisticData);
-    int savedCorrectAnswers = converted[questionNumber - 1].$1;
-    int savedIncorrectAnswers = converted[questionNumber - 1].$2;
-    double savedAverageTimeToAnswer = converted[questionNumber - 1].$3;
-
-    int savedAnswers = savedCorrectAnswers + savedIncorrectAnswers;
-
-    savedAverageTimeToAnswer = ((savedAverageTimeToAnswer * savedAnswers) + (60 - time)) / (savedAnswers + 1);
-
-    if (selectedAnswer == correctAnswers[questionNumber - 1]) {
-      savedCorrectAnswers++;
-    }
-    else {
-      savedIncorrectAnswers++;
-    }
-
-    converted[questionNumber-1] = (savedCorrectAnswers, savedIncorrectAnswers, savedAverageTimeToAnswer);
-
-    var convertedAgain = convertToSavedStatisticData(converted);
-    shared.setStringList(sharedStatisticData, convertedAgain);
-  }
-
   Future<void> nextQuestion({void Function()? actionAfterSave}) async {
-    await saveData();
     if (!widget.isRetry) {
       if (mounted) {
-        QuestionState currentQuestionState = Provider.of<QuestionState>(
-            context, listen: false);
-        currentQuestionState.nextQuestion(questionNumber, selectedAnswer);
+        QuizState currentQuestionState =
+            Provider.of<QuizState>(context, listen: false);
+        currentQuestionState.nextQuestion(selectedAnswer);
       }
       actionAfterSave?.call();
       await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
-        QuestionState currentQuestionState = Provider.of<QuestionState>(
-            context, listen: false);
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) {
-              if (questionNumber < 20) {
-                return QuizPage(questionNumber: questionNumber + 1,
-                    getTimeFromState: false);
-              }
-              else {
-                var currentAnswers = currentQuestionState.answers;
-                return ProgressPage(
-                  haveBackButton: false, currentAnswers: currentAnswers,);
-              }
-            })
-        );
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+          if (questionNumber < 19) {
+            return QuizPage(
+                questionNumber: questionNumber + 1, quizType: widget.quizType);
+          } else {
+            return StatisticPage(quizType: widget.quizType);
+          }
+        }));
       }
-    }
-    else {
+    } else {
       if (mounted) {
-        QuestionState currentQuestionState = Provider.of<QuestionState>(
-            context, listen: false);
+        QuizState currentQuestionState =
+            Provider.of<QuizState>(context, listen: false);
         currentQuestionState.changeAnswer(questionNumber, selectedAnswer);
       }
       actionAfterSave?.call();
@@ -122,18 +105,12 @@ class _QuizPageState extends State<QuizPage> {
           setState(() {
             time -= 0.01;
           });
-        }
-        else {
-          while(mounted && (ModalRoute.of(context)?.isCurrent ?? false)) {
+        } else {
+          while (mounted && (ModalRoute.of(context)?.isCurrent ?? false)) {
             await Future.delayed(const Duration(milliseconds: 10));
           }
         }
-        if (mounted && widget.getTimeFromState) {
-          QuestionState currentQuestionState = Provider.of<QuestionState>(context, listen: false);
-          currentQuestionState.setTime(time);
-        }
-      }
-      else {
+      } else {
         break;
       }
     }
@@ -144,7 +121,7 @@ class _QuizPageState extends State<QuizPage> {
       });
       selectedAnswer = -1;
       nextQuestion(actionAfterSave: () {
-        selectedAnswer = correctAnswers[questionNumber - 1];
+        selectedAnswer = _correctAnswers[questionNumber];
       });
     }
   }
@@ -154,9 +131,8 @@ class _QuizPageState extends State<QuizPage> {
     return Scaffold(
       backgroundColor: backgroundColor,
       body: WithBottomButtons(
-        pageEntity: PageEntityQuiz(questionNumber),
-        inactiveButton: widget.isRetry ? 1 : -1,
-          content: Padding(
+          disabledButton: widget.isRetry ? 1 : -1,
+          child: Padding(
             padding: const EdgeInsets.only(left: 15, right: 15, top: 50),
             child: Column(
               children: [
@@ -169,42 +145,48 @@ class _QuizPageState extends State<QuizPage> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(bottom: 7.0),
-                            child: Image.asset("res/images/time_icon.png",
-                            width: 22,
-                            height: 22,),
+                            child: Image.asset(
+                              "res/images/icon_timer.png",
+                              width: 22,
+                              height: 22,
+                            ),
                           ),
                           LinearProgressIndicator(
                             backgroundColor: quizProgressBarBackgroundColor,
                             color: quizProgressBarColor,
                             value: time / 60,
                             minHeight: 13,
-                            borderRadius: const BorderRadius.all(Radius.circular(16)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(16)),
                           )
                         ],
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          time = 0.1;
-                        });
-                      },
-                        child: Image.asset("res/images/cup.png", width: 38, height: 62,)
-                    ),
+                        onTap: () {
+                          setState(() {
+                            time = 0.1;
+                          });
+                        },
+                        child: Image.asset(
+                          "res/images/cup.png",
+                          width: 38,
+                          height: 62,
+                        )),
                     Expanded(
                       flex: 1,
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 7.0),
-                            child: Text("$questionNumber/20")
-                          ),
+                              padding: const EdgeInsets.only(bottom: 7.0),
+                              child: Text("${questionNumber + 1}/20")),
                           LinearProgressIndicator(
                             backgroundColor: quizProgressBarBackgroundColor,
                             color: quizProgressBarColor,
-                            value: questionNumber / 20,
+                            value: (questionNumber + 1) / 20,
                             minHeight: 13,
-                            borderRadius: const BorderRadius.all(Radius.circular(16)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(16)),
                           )
                         ],
                       ),
@@ -216,12 +198,13 @@ class _QuizPageState extends State<QuizPage> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left: 10, right: 10, top: 50, bottom: 30),
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 10, top: 50, bottom: 30),
                           child: Text(
-                            questions[questionNumber-1],
+                            _questions[questionNumber],
                             style: const TextStyle(
-                                fontFamily: "Arial",
-                                height: 1,
+                              fontFamily: "Arial",
+                              height: 1,
                               fontSize: 15,
                             ),
                           ),
@@ -230,26 +213,40 @@ class _QuizPageState extends State<QuizPage> {
                           AnswerOption(
                             color: dependOnPicked(i),
                             imageAsset: optionImages[i],
-                            text: answers[questionNumber - 1][i].substring(3),
+                            text: _answers[questionNumber][i].substring(3),
                             selected: selectedAnswer == i && sent == false,
-                            onSelected: !sent ? () {
-                              setState(() {
-                                selectedAnswer = i;
-                              });
-                            } : null,
+                            onSelected: !sent
+                                ? () {
+                                    setState(() {
+                                      selectedAnswer = i;
+                                    });
+                                  }
+                                : null,
                           ),
                         Padding(
-                            padding: const EdgeInsets.only(bottom: 110, top: 50),
-                            child: DefaultImageButton(
-                            onPressed: selectedAnswer != -1 ? () {
-                              setState(
-                                      () {
-                                    sent = true;
-                                  }
-                              );
-                              nextQuestion();
-                            } : null,
-                            imageAsset: "res/images/submit_button.png"
+                          padding: const EdgeInsets.only(
+                                    bottom: 130, top: 50),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                                maxWidth: 260,
+                              ),
+                            child: AspectRatio(
+                                aspectRatio: 436 / 127,
+                                child: ButtonWithTwoImages(
+                                        isEnabled: selectedAnswer != -1,
+                                        imageAssetPressed:
+                                            "res/images/button_submit(pressed).png",
+                                        imageAssetUnpressed:
+                                            "res/images/button_submit.png",
+                                        disabledImageAsset:
+                                            "res/images/button_submit.png",
+                                        action: () {
+                                          setState(() {
+                                            sent = true;
+                                          });
+                                          nextQuestion();
+                                        }),
+                              ),
                           ),
                         )
                       ],
@@ -258,24 +255,20 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ],
             ),
-          )
-      ),
+          )),
     );
   }
 
   Color dependOnPicked(int answerNumber) {
     if (selectedAnswer == -1 || selectedAnswer != answerNumber) {
       return unselectedAnswerColor;
-    }
-    else if (sent) {
-      if (selectedAnswer == correctAnswers[questionNumber-1]) {
+    } else if (sent) {
+      if (selectedAnswer == _correctAnswers[questionNumber]) {
         return correctAnswerColor;
-      }
-      else {
+      } else {
         return incorrectAnswerColor;
       }
-    }
-    else {
+    } else {
       return selectedAnswerColor;
     }
   }

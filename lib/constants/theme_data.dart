@@ -17,6 +17,6 @@ ThemeData themeData = ThemeData(
     headlineMedium: whiteColor,
     headlineLarge: whiteColor,
   ),
-  fontFamily: "Arial",
+  fontFamily: "GothamPro",
   useMaterial3: true,
 );

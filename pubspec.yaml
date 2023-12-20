@@ -36,6 +36,8 @@ dependencies:
   flutter_html: any
   shared_preferences: any
   provider: any
+  syncfusion_flutter_core: any
+  syncfusion_flutter_sliders: any
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,30 +65,38 @@ flutter:
   uses-material-design: true
 
   assets:
-    - res/images/continue_button.png
+    - res/images/background_loading_1.png
+    - res/images/background_loading_2.png
+    - res/images/background_loading_3.png
+    - res/images/button_basketball_quiz.png
+    - res/images/button_cricket_quiz.png
+    - res/images/button_done(pressed).png
+    - res/images/button_done.png
+    - res/images/button_menu(pressed).png
+    - res/images/button_menu.png
+    - res/images/button_next(pressed).png
+    - res/images/button_next.png
+    - res/images/button_privacy_policy(pressed).png
+    - res/images/button_privacy_policy.png
+    - res/images/button_setting(pressed).png
+    - res/images/button_setting.png
+    - res/images/button_share(pressed).png
+    - res/images/button_share.png
+    - res/images/button_soccer_quiz.png
+    - res/images/button_statistic(pressed).png
+    - res/images/button_statistic.png
+    - res/images/button_submit(pressed).png
+    - res/images/button_submit.png
+    - res/images/button_try_again(pressed).png
+    - res/images/button_try_again.png
     - res/images/cup.png
-    - res/images/done_mark.png
-    - res/images/home_button(selected).png
-    - res/images/home_button.png
-    - res/images/icon_bg.png
-    - res/images/icon_logo.png
-    - res/images/loading_background.png
-    - res/images/new_quiz_button.png
+    - res/images/icon_timer.png
     - res/images/option_a.png
     - res/images/option_b.png
     - res/images/option_c.png
     - res/images/option_d.png
-    - res/images/privacy_policy_button.png
-    - res/images/progress_button(selected).png
-    - res/images/progress_button.png
     - res/images/selected_answer.png
-    - res/images/share_button(selected).png
-    - res/images/share_button.png
-    - res/images/start_button.png
-    - res/images/statistic_button.png
-    - res/images/submit_button.png
-    - res/images/time_icon.png
-    - res/images/try_again_mark.png
+    - res/images/sound_thumb.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -95,18 +105,29 @@ flutter:
   # https://flutter.dev/assets-and-images/#from-packages
 
   fonts:
-    - family: Arial
+    - family: GothamPro
       fonts:
-        - asset: res/fonts/Arial-Black.ttf
+        - asset: res/fonts/GothamPro.ttf
+        - asset: res/fonts/GothamPro-Black.ttf
           weight: 900
-        - asset: res/fonts/Arial-BoldItalic.ttf
+        - asset: res/fonts/GothamPro-BlackItalic.ttf
+          style: italic
+          weight: 900
+        - asset: res/fonts/GothamPro-Bold.ttf
+          weight: 700
+        - asset: res/fonts/GothamPro-BoldItalic.ttf
           style: italic
           weight: 700
-        - asset: res/fonts/Arial-Bold.ttf
-          weight: 700
-        - asset: res/fonts/Arial-Italic.ttf
+        - asset: res/fonts/GothamPro-Light.ttf
+          weight: 300
+        - asset: res/fonts/GothamPro-LightItalic.ttf
           style: italic
-        - asset: res/fonts/Arial-Regular.ttf
+          weight: 300
+        - asset: res/fonts/GothamPro-Medium.ttf
+          weight: 500
+        - asset: res/fonts/GothamPro-MediumItalic.ttf
+          style: italic
+          weight: 500
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

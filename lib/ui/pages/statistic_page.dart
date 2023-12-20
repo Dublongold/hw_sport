@@ -1,112 +1,100 @@
 import 'package:flutter/material.dart';
-import 'package:hw_sport/constants/arrays.dart';
 import 'package:hw_sport/constants/colors.dart';
-import 'package:hw_sport/constants/shared_preferences.dart';
 import 'package:hw_sport/constants/strings.dart';
+import 'package:hw_sport/models/quiz_types.dart';
+import 'package:hw_sport/models/statistic_entity.dart';
 import 'package:hw_sport/ui/components/statistic_item.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hw_sport/ui/components/with_bottom_buttons.dart';
+import 'package:provider/provider.dart';
+import '../../constants/cricket_quiz.dart' as cricket;
+import '../../constants/basketball_quiz.dart' as basketball;
+import '../../constants/soccer_quiz.dart' as soccer;
 
-import '../../models/statistic_entity.dart';
-import '../../util/convert_saved_statistic_data.dart';
-
+import '../../states/quiz_state.dart';
 
 class StatisticPage extends StatefulWidget {
-  const StatisticPage({super.key});
+  final QuizType quizType;
+  const StatisticPage({super.key, required this.quizType});
 
   @override
   State<StatisticPage> createState() => _StatisticPageState();
 }
 
 class _StatisticPageState extends State<StatisticPage> {
-  static const defaultValue = (0, 0, 0.0);
-  List<(int, int, double)> correctToIncorrect = [
-    for(int i = 0; i < questions.length; i++)
-      defaultValue,
-  ];
+
+  List<int> answers = [];
+
+  List<int> get _correctAnswers => switch(widget.quizType) {
+    QuizType.cricket => cricket.correctAnswers,
+    QuizType.basketball => basketball.correctAnswers,
+    QuizType.soccer => soccer.correctAnswers,
+    QuizType.none => List.empty(),
+  };
 
   @override
   void initState() {
     super.initState();
-    fetchStatistic();
+    answers = Provider.of<QuizState>(context, listen: false).answers;
   }
 
-  Future<void> fetchStatistic() async {
-      SharedPreferences shared = await SharedPreferences.getInstance();
-      List<String>? savedStatisticData = shared.getStringList(sharedStatisticData);
-      setState(() {
-        correctToIncorrect = convertFromSavedStatisticData(savedStatisticData);
-      });
+  onPopInvoked(result) {
+    setState(() {
+      QuizState state = Provider.of(context, listen: false);
+      answers = state.answers;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final items = <StatisticEntity>[
-      for (int i = 0; i < questions.length; i++)
-        StatisticEntity(text: questions[i],
-            numberOfCorrectAnswers: correctToIncorrect[i].$1,
-            numberOfIncorrectAnswers: correctToIncorrect[i].$2,
-            averageTimeToAnswer: correctToIncorrect[i].$3
+    var items = <StatisticEntity?>[
+      for (int i = 0; i < answers.length; i++)
+        StatisticEntity(
+          quizType: widget.quizType,
+          questionNumber: i,
+          answer: answers[i],
+          answerState: answers[i] == -1 ? AnswerState.timeExpired : (answers[i] == _correctAnswers[i] ? AnswerState.done : AnswerState.failed),
+          onPopInvoked: onPopInvoked
         )
     ];
+    if (items.length < 20) {
+      items.addAll(List.generate(20 - items.length, (index) => null));
+    }
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(padding: EdgeInsets.only(top: 40)),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0, bottom: 15.0),
-            child: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                iconSize: 32,
-                highlightColor: Colors.white12,
-                padding: EdgeInsets.zero,
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                )
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  for (int index = 0; index < questions.length; index++)
-                      StatisticItem(
-                          isOdd: index % 2 == 1,
-                          statisticEntity: items[index]
-                      ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(25),
-                    child: TextButton(
-                        onPressed: () {
-                          SharedPreferences.getInstance().then((value) {
-                            value.setStringList(sharedStatisticData, convertToSavedStatisticData(defaultSavedStatisticData));
-                          });
-                          setState(() {
-                            correctToIncorrect = defaultSavedStatisticData;
-                          });
-                        },
-                        style: ButtonStyle(
-                          overlayColor: MaterialStateProperty.all(Colors.white12)
-                        ),
-                        child: const Text(
-                          clearDataString,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Arial"
-                          ),
-                        )
-                    ),
-                  )
-                ],
+      body: WithBottomButtons(
+        disabledButton: 1,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 50,
               ),
-            )
-          )
-        ],
+              SizedBox(
+                width: double.infinity,
+                height: 80,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    statisticString.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.2
+                    ),
+                  ),
+                ),
+              ),
+              for (int index = 0; index < items.length; index++)
+                StatisticItem(
+                  isOdd: index % 2 == 1,
+                  statisticEntity: items[index],
+                  ),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 110),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

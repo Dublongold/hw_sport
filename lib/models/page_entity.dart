@@ -1,13 +1,31 @@
+import 'package:hw_sport/models/quiz_types.dart';
+
 interface class PageEntity {
 
 }
 
-class PageEntityQuiz implements PageEntity {
+
+class PageEntityMenu implements PageEntity {
   final int questionNumber;
-  PageEntityQuiz(this.questionNumber);
+  final QuizType quizType;
+  final bool isOver;
+  PageEntityMenu({
+    required this.questionNumber,
+    required this.quizType,
+    required this.isOver
+  });
 }
 
-class PageEntityProgress implements PageEntity {
+class PageEntityQuiz implements PageEntity {
+  final int questionNumber;
+  final int quizType;
+  PageEntityQuiz(
+      this.questionNumber,
+      this.quizType,
+      );
+}
+
+class PageEntityStatistic implements PageEntity {
   final int answersCount;
-  PageEntityProgress(this.answersCount);
+  PageEntityStatistic(this.answersCount);
 }

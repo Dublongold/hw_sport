@@ -1,66 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:hw_sport/constants/colors.dart';
-import 'package:hw_sport/ui/components/default_image_button.dart';
-import 'package:hw_sport/ui/pages/privacy_policy_page.dart';
+import 'package:hw_sport/models/quiz_types.dart';
+import 'package:hw_sport/states/quiz_state.dart';
+import 'package:hw_sport/ui/components/with_bottom_buttons.dart';
 import 'package:hw_sport/ui/pages/quiz_page.dart';
-import 'package:hw_sport/ui/pages/statistic_page.dart';
 import 'package:provider/provider.dart';
 
-import '../../states/question_state.dart';
+import '../../models/button_container.dart';
 
-class ButtonContainer {
-  final String buttonAsset;
-  final void Function() action;
 
-  ButtonContainer(this.buttonAsset, this.action);
-}
 
 class MenuPage extends StatelessWidget {
-  const MenuPage({super.key});
+  final int questionNumber;
+  final QuizType quizType;
+  final bool isOver;
+  const MenuPage({
+    super.key,
+    this.quizType = QuizType.none,
+    this.questionNumber = -1,
+    this.isOver = true
+  });
 
-  void navigateTo(BuildContext context, Widget destination) {
+  void _navigateToQuiz(BuildContext context, QuizType quizType) {
+    Provider.of<QuizState>(context, listen: false).startQuiz(quizType);
     Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => destination)
+        MaterialPageRoute(builder: (_) => QuizPage(quizType: quizType))
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final buttonAssets = [
-      ButtonContainer("res/images/continue_button.png", () {
-        QuestionState currentQuestionState = Provider.of<QuestionState>(context, listen: false);
-        navigateTo(context, QuizPage(questionNumber: currentQuestionState.questionNumber));
+      ButtonContainer("res/images/button_cricket_quiz.png", () {
+        _navigateToQuiz(context, QuizType.cricket);
       }),
-      ButtonContainer("res/images/new_quiz_button.png", () {
-        navigateTo(context, const QuizPage(questionNumber: 1, getTimeFromState: false,));
+      ButtonContainer("res/images/button_basketball_quiz.png", () {
+        _navigateToQuiz(context, QuizType.basketball);
       }),
-      ButtonContainer("res/images/statistic_button.png", () {
-        navigateTo(context, const StatisticPage());
-      }),
-      ButtonContainer("res/images/privacy_policy_button.png", () {
-        navigateTo(context, const PrivacyPolicyPage());
+      ButtonContainer("res/images/button_soccer_quiz.png", () {
+        _navigateToQuiz(context, QuizType.soccer);
       }),
     ];
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (final buttonAsset in buttonAssets)
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: DefaultImageButton(
-                    onPressed: buttonAsset.action,
-                    imageAsset: buttonAsset.buttonAsset
+      body: WithBottomButtons(
+        disabledButton: 0,
+        child: Positioned.fill(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Spacer(flex: 1,),
+              for (final buttonAsset in buttonAssets)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 400
+                    ),
+                    child: FractionallySizedBox(
+                      widthFactor: 0.85,
+                      child: AspectRatio(
+                        aspectRatio: 724 / 220,
+                        child: IconButton(
+                            onPressed: buttonAsset.action,
+                            padding: EdgeInsets.zero,
+                            icon: Image.asset(buttonAsset.buttonAsset)
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              )
-          ],
+              const Spacer(flex: 2,)
+            ],
+          ),
         ),
       ),
     );
   }
-
-  void defaultOnClick() {}
 }

@@ -8,6 +8,14 @@ const Color loadingBarBackgroundColor = Color(0xFF333333);
 const Color oddItemColor = Color(0xFF555555);
 const Color evenItemColor = Color(0xFFA3A3A3);
 
+const Color bottomBarBackgroundColor = Color(0xFF1E1E1E);
+
+const Color soundBarBackgroundColor = Color(0xFF5BB066);
+const Color soundBarColor = Color(0xFF4F4F4F);
+
+const Color soundThumbStrokeColor = Color(0xFFF5F5F5);
+const Color soundThumbColor = Color(0xFF5BB066);
+
 const Color quizProgressBarBackgroundColor = Color(0xFF1E1E1E);
 const Color quizProgressBarColor = Color(0xFF5BB066);
 

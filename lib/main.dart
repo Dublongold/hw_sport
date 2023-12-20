@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hw_sport/constants/strings.dart';
-import 'package:hw_sport/states/question_state.dart';
+import 'package:hw_sport/states/quiz_state.dart';
 import 'package:hw_sport/ui/pages/loading_page.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +10,7 @@ import 'constants/theme_data.dart';
 void main() {
   runApp(
       ChangeNotifierProvider(
-          create: (context) => QuestionState(),
+          create: (context) => QuizState(),
           child: const MyApp()
       )
   );

@@ -23,3 +23,10 @@ const String clearDataString = "Clear data";
 const String correctAnswerString = "Correct answer: %s";
 const String incorrectAnswerString = "Wrong answer: %s";
 const String timeExpiredString = "Time Expired";
+
+const String statisticString = "Statistic";
+const String settingString = "Setting";
+const String soundString = "Sound";
+
+const String shareTextString = "Share application with friend";
+const String privacyPolicyString = "Privacy Policy";
